@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts</title>
+    <style>
+        body {
+            font-family: sans-serif; 
+            max-width: 400px; 
+            margin: 20px auto; 
+            padding: 10px; 
+        }
+        form { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            margin-bottom: 20px; }
+        input { 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+        }
+        button { 
+            padding: 10px; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 4px; 
+        }
+        .btn-save { 
+            background-color: #28a745; 
+            color: white; 
+        }
+        .btn-clear { 
+            background-color: #dc3545; 
+            color: white; 
+            margin-top: 10px; 
+            width: 100%; 
+        }
+        .contact-item { 
+            border-bottom: 1px solid #eee; 
+            padding: 10px 0; 
+        }
+        .contact-item, p { 
+            margin: 2px 0; 
+        }
+    </style>
+</head>
+<body>
+        <h2 id="contactFormhead">Додати контакт</h2>
+        <form id="contactForm">
+            <input type="text" id="name" placeholder="Ім'я" required />
+            <input type="tel" id="phone" placeholder="Телефон" required />
+            <input type="email" id="email" placeholder="Email" required />
+            <button type="submit" class="btn-save">Додати контакт</button>
+        </form>
+
+        <h2>Список контактів</h2>
+        <div id="contactList"></div>
+        <button id="clearBtn" class="btn-clear">Очистити</button>
+        
+    <script>
+        const contactForm = document.getElementById('contactForm');
+        const contactList = document.getElementById('contactList');
+        const clearBtn = document.getElementById('clearBtn');
+        
+        function loadContacts() {
+            const savedContacts = localStorage.getItem('contacts');
+            return savedContacts ? JSON.parse(savedContacts) : [];
+        }
+        function displayContacts() {
+            const contacts = loadContacts();
+            contactList.innerHTML = '';
+            
+            contacts.forEach((contact) => {
+                const div = document.createElement('div');
+                div.className = 'contact-item';
+                div.innerHTML = `
+                    <p><strong>${contact.name}</strong></p>
+                    <p>Телефон: ${contact.phone}</p>
+                    <p>Email: ${contact.email}</p>
+                `;
+                contactList.appendChild(div);
+            });
+        }
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault(); 
+
+            const newContact = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
+            };
+
+            const contacts = loadContacts();
+            contacts.push(newContact);
+
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+
+            contactForm.reset();
+            displayContacts();
+        });
+
+        clearBtn.addEventListener('click', () => {
+            if (confirm('Ви впевнені, що хочете видалити всі контакти?')) {
+                localStorage.removeItem('contacts');
+                displayContacts();
+            }
+        });
+        displayContacts();
+    </script>
+
+</body>
+</html>
